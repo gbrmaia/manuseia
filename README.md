@@ -7,7 +7,7 @@
 Antes de começar, verifique se você atendeu aos seguintes requisitos:
 
 - Você instalou a versão mais recente de `nodejs`
-- Você tem uma máquina `Windows / Linux / Mac`. Indique qual sistema operacional é compatível / não compatível.
+- Você tem uma máquina `Windows / Linux / Mac`.
 
 ## 🚀 Instalando o *Manuseia*
 
