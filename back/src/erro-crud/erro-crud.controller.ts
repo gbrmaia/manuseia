@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ErroCrudService } from './erro-crud.service';
 import { CreateErroCrudDto } from './dto/create-erro-crud.dto';
 import { UpdateErroCrudDto } from './dto/update-erro-crud.dto';
@@ -24,13 +33,16 @@ export class ErroCrudController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateErroCrudDto: UpdateErroCrudDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateErroCrudDto: UpdateErroCrudDto,
+  ) {
     return this.erroCrudService.update(id, updateErroCrudDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.erroCrudService.remove(id);
+  @Delete(':errorCode')
+  remove(@Param('errorCode') errorCode: number) {
+    return this.erroCrudService.remove(errorCode);
   }
 
   @Post('review')
@@ -44,7 +56,13 @@ export class ErroCrudController {
   }
 
   @Get('reviews/filter')
-  getFilteredReviews(@Query('startDate') startDate: string, @Query('endDate') endDate: string) {
-    return this.erroCrudService.getFilteredReviews(new Date(startDate), new Date(endDate));
+  getFilteredReviews(
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+  ) {
+    return this.erroCrudService.getFilteredReviews(
+      new Date(startDate),
+      new Date(endDate),
+    );
   }
 }

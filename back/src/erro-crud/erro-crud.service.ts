@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateErroCrudDto } from './dto/create-erro-crud.dto';
@@ -13,10 +17,9 @@ export class ErroCrudService {
   async create(createErroCrudDto: CreateErroCrudDto): Promise<Erro> {
     const { errorCode } = createErroCrudDto;
 
-    // Verifica se já existe um erro com o mesmo título
     const existingError = await this.erroModel.findOne({ errorCode }).exec();
     if (existingError) {
-      throw new ConflictException('Erro já cadastrado');
+      throw new ConflictException('Código de erro já cadastrado');
     }
 
     const createdErro = new this.erroModel(createErroCrudDto);
@@ -35,18 +38,29 @@ export class ErroCrudService {
     return erro;
   }
 
-  async update(id: string, updateErroCrudDto: UpdateErroCrudDto): Promise<Erro> {
-    const updatedErro = await this.erroModel.findByIdAndUpdate(id, updateErroCrudDto, { new: true }).exec();
+  async update(
+    id: string,
+    updateErroCrudDto: UpdateErroCrudDto,
+  ): Promise<Erro> {
+    const updatedErro = await this.erroModel
+      .findByIdAndUpdate(id, updateErroCrudDto, { new: true })
+      .exec();
     if (!updatedErro) {
-      throw new NotFoundException(`Erro com id ${id} não encontrado`);
+      throw new NotFoundException(
+        `Não foi possível atualizar, ${id} não encontrado`,
+      );
     }
     return updatedErro;
   }
 
-  async remove(id: string): Promise<any> {
-    const deletedErro = await this.erroModel.findByIdAndDelete(id).exec();
+  async remove(errorCode: number): Promise<any> {
+    const deletedErro = await this.erroModel
+      .findByIdAndDelete(errorCode)
+      .exec();
     if (!deletedErro) {
-      throw new NotFoundException(`Erro com id ${id} não encontrado`);
+      throw new NotFoundException(
+        `Não foi possível remover, ${errorCode} não encontrado`,
+      );
     }
     return deletedErro;
   }
@@ -55,18 +69,20 @@ export class ErroCrudService {
     const { errorCode, clientCode, review } = createReviewDto;
     const erro = await this.erroModel.findOne({ errorCode }).exec();
     if (!erro) {
-      throw new NotFoundException(`Erro com código ${errorCode} não encontrado`);
+      throw new NotFoundException(
+        `Não foi possível avaliar, ${errorCode} não encontrado`,
+      );
     }
 
     // Verifica se o cliente já deu review
-    if (erro.reviews.some(r => r.clientCode === clientCode)) {
-      throw new ConflictException(`Cliente com código ${clientCode} já deu review.`);
+    if (erro.reviews.some((r) => r.clientCode === clientCode)) {
+      throw new ConflictException(
+        `Cliente com código ${clientCode} já deu review.`,
+      );
     }
 
-    // Adiciona a avaliação
     erro.reviews.push(createReviewDto);
 
-    // Atualiza contadores
     if (review === 'positive') {
       erro.positiveReview += 1;
       erro.positiveReviewClientCodes.push(clientCode);
@@ -80,7 +96,10 @@ export class ErroCrudService {
 
   async getDashboard(): Promise<any> {
     const erros = await this.erroModel.find().exec();
-    const totalReviews = erros.reduce((acc, erro) => acc + erro.reviews.length, 0);
+    const totalReviews = erros.reduce(
+      (acc, erro) => acc + erro.reviews.length,
+      0,
+    );
     const averageReviewsPerSuggestion = totalReviews / erros.length;
     return {
       totalReviews,
@@ -89,12 +108,16 @@ export class ErroCrudService {
   }
 
   async getFilteredReviews(startDate: Date, endDate: Date): Promise<any> {
-    const erros = await this.erroModel.find({
-      'reviews.date': { $gte: startDate, $lte: endDate },
-    }).exec();
-    return erros.map(erro => ({
+    const erros = await this.erroModel
+      .find({
+        'reviews.date': { $gte: startDate, $lte: endDate },
+      })
+      .exec();
+    return erros.map((erro) => ({
       errorCode: erro.errorCode,
-      reviews: erro.reviews.filter(review => review.date >= startDate && review.date <= endDate),
+      reviews: erro.reviews.filter(
+        (review) => review.date >= startDate && review.date <= endDate,
+      ),
     }));
   }
 }
