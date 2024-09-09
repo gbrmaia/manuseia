@@ -35,10 +35,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const ErroSchema = z.object({
-  title: z.string().min(10, { message: "Titulo é obrigatório" }),
-  type: z.string().min(1, { message: "Tipo é obrigatório" }),
-  errorCode: z.string().min(6, { message: "O código deve conter exatamente 6 caracteress" }),
-  description: z.string().min(35, { message: "Descrição é obrigatória" }),
+  title: z.string().min(10, { message: "Titulo é obrigatório e deve conter no minímo 10 caracteres." }),
+  type: z.string().min(1, { message: "Definir o tipo é obrigatório." }),
+  errorCode: z.string().min(6, { message: "Código é obrigatório e deve conter exatamente 6 caracteres." }),
+  description: z.string().min(35, { message: "Descrição é obrigatória e deve conter no minímo 35 caracteres." }),
   createdAt: z.date().default(() => new Date()),
 });
 
@@ -78,8 +78,8 @@ export function ErroAddForm() {
         title: "Cadastrado ✅",
         description: "Salvo em nosso banco...",
       });
-      formMethods.reset(); 
-      router.refresh(); 
+      formMethods.reset();
+      router.refresh();
     } catch (error) {
       toast({
         title: "Oooopss... ❌",
@@ -277,13 +277,13 @@ export function ErroAddForm() {
                   <Button variant="destructive" type="button" className="text-base" onClick={() => formMethods.reset()}>Limpar</Button>
                   <Button type="submit" className="text-base" disabled={isLoading}>
                     {isLoading ? (
-                    <>
-                      <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
-                      Adicionando...
-                    </>
-                  ) : (
-                    "Adicionar"
-                  )}</Button>
+                      <>
+                        <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                        Adicionando...
+                      </>
+                    ) : (
+                      "Adicionar"
+                    )}</Button>
                 </div>
                 <p className="w-full text-center mt-2 text-muted-foreground select-none text-xs">A sua sugestão poderá aparecer no modal em até 30 segundos após o cadastro</p>
               </CardFooter>
