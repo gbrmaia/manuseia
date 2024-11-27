@@ -15,6 +15,7 @@ import React, { useEffect, useState } from "react";
 import ErrorSearch from "./searchErro";
 import AddReview from "./reviewAdd";
 import { LoaderCircle, SlidersHorizontal, Star, TrendingUp, TrendingDown, CircleSlash } from "lucide-react";
+import axios from 'axios';
 
 type Review = {
     clientCode: string;
@@ -36,13 +37,15 @@ type Errors = {
 };
 
 const fetchData = async (): Promise<Errors[]> => {
-    const res = await fetch("http://localhost:4000/erro-crud/", { cache: "no-store", next: {revalidate:30} }, );
+    const res = await fetch("http://localhost:4000/erro-crud/", { cache: "no-store", next: { revalidate: 30 } },);
+
 
     if (!res.ok) {
         throw new Error("Falha ao listar códigos cadastrados.");
     }
 
     const data = await res.json();
+    
     return data;
 }
 
@@ -53,16 +56,12 @@ const CardErrorTable: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState<string>("");
 
-    const [lista, setLista] = useState([
-        {
-          titulo: "dudu",
-          descricao: "Mto merda",
-        },
-        {
-          titulo: "joão",
-          descricao: "Mto bom",
-        },
-      ]);
+
+    const [lista, setLista] = useState([]);
+    const fetchD = async () => {
+        const result = await axios.get("http://localhost:2500/comments");
+        setLista(result.data);
+    }
 
     useEffect(() => {
         fetchData()
@@ -74,6 +73,7 @@ const CardErrorTable: React.FC = () => {
                 setError(err.message);
                 setLoading(false);
             });
+        fetchD()
     }, []);
 
     const updateReviews = (errorCode: string, newReview: Review) => {
@@ -186,7 +186,7 @@ const CardErrorTable: React.FC = () => {
             </div>
             <div className="gap-4 mt-4">
                 {sortedErrors.map((error) => (
-                    <Card  key={error.errorCode}>
+                    <Card key={error.errorCode}>
                         <CardHeader className="relative">
                             <CardTitle className="select-none flex items-center justify-between">
                                 <span>{error.type} - {error.errorCode}</span>
@@ -214,16 +214,17 @@ const CardErrorTable: React.FC = () => {
                                 <AccordionItem value="item-1">
                                     <AccordionTrigger>Comentários</AccordionTrigger>
                                     <AccordionContent>
-                                        {lista.map(c => (
-                                            <>
-                                                <h1>login: {c.titulo}</h1>
-                                                <h1>Comentario: {c.descricao}</h1><br />
-                                            </>
-                                        ))}
+                                        {
+                                            lista.filter((erro) => erro.codigoErro == error.errorCode).map(c => (
+                                                <>
+                                                    <h1>login: {c.titulo}</h1>
+                                                    <h1>Comentario: {c.descricao}</h1><br />
+                                                </>
+                                            ))}
                                     </AccordionContent>
                                 </AccordionItem>
                             </Accordion>
-                            
+
                         </CardContent>
                         <CardFooter>
                         </CardFooter>
