@@ -53,6 +53,17 @@ const CardErrorTable: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState<string>("");
 
+    const [lista, setLista] = useState([
+        {
+          titulo: "dudu",
+          descricao: "Mto merda",
+        },
+        {
+          titulo: "joão",
+          descricao: "Mto bom",
+        },
+      ]);
+
     useEffect(() => {
         fetchData()
             .then(data => {
@@ -199,6 +210,20 @@ const CardErrorTable: React.FC = () => {
                                     </AccordionContent>
                                 </AccordionItem>
                             </Accordion>
+                            <Accordion type="single" collapsible>
+                                <AccordionItem value="item-1">
+                                    <AccordionTrigger>Comentários</AccordionTrigger>
+                                    <AccordionContent>
+                                        {lista.map(c => (
+                                            <>
+                                                <h1>login: {c.titulo}</h1>
+                                                <h1>Comentario: {c.descricao}</h1><br />
+                                            </>
+                                        ))}
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
+                            
                         </CardContent>
                         <CardFooter>
                         </CardFooter>
